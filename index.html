@@ -1,0 +1,130 @@
+<html>
+	<head>
+		<title>Javascript Library</title>
+		<script type="text/javascript" src="js/tasklist.js"></script>
+		<link rel="stylesheet" href="css/tasklist.css">
+		
+		<style>
+			body {
+				font-family: Verdana; 
+				font-size: 14px;
+			}
+			
+			.list-container {
+				padding: 10px; 
+				border: 1px solid #333; 
+			}
+			
+				.list-container > h3 {
+					margin: 0 0 10px 0;
+					color: #333;
+				}
+			
+			#chores {
+				display: block; 
+				background-color: tan; 
+				margin-bottom: 10px;
+			}
+			
+			#shopping {
+				display: inline-block; 
+				min-width: 320px; 
+				width: 20%; 
+				background-color: lightblue; 
+				margin-right: 10px;
+				margin-bottom: 10px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="list-container" id="chores">
+			<h3>Chore List</h3>
+			<div id="task-list-1"></div>
+		</div>
+
+		<div style="display: block; overflow: hidden;">
+		<div class="list-container" id="shopping">
+			<h3>Shopping List</h3>
+			<div id="task-list-2"></div>
+		</div>
+		
+		<div class="list-container" id="shopping">
+			<h3>Shopping List <i>(alphabetized)</i></h3>
+			<div id="task-list-3"></div>
+		</div>
+		</div>
+	</body>
+</html>
+
+<script type="text/javascript">
+	// extend the class with prototypes, specifically to provide a sorting method
+	TaskList.prototype.swap = String.prototype.swap ||
+	function (i,j) {
+		"use strict";
+		var temp = this.taskData[i];
+		this.taskData[i] = this.taskData[j];
+		this.taskData[j] = temp;
+	};
+	
+	TaskList.prototype.compare = String.prototype.compare ||
+	function (i,j) {
+		"use strict";
+		var len = this.taskData.length;
+		if (i < len && j < len)
+		{
+			var task1 = this.taskData[i].title;
+			var task2 = this.taskData[j].title;
+			
+			if(task1 < task2) return -1;
+			if(task1 > task2) return 1;
+		} 
+		return 0;
+	};
+	
+	TaskList.prototype.alphabetize = String.prototype.alphabetize ||
+	function () {
+		"use strict";
+		var swapped;
+		do {
+			swapped = false;
+			for(var i = 0; i < this.taskData.length; i++) {
+				if(this.taskData[i] && this.taskData[i + 1] && this.compare(i, i+1) == 1) {
+					this.swap(i, i + 1);
+					swapped = true;
+				}
+			}
+		} while(swapped);
+		this.bind(this.taskData);
+	};
+
+	// bind chores JSON to new tasklist instance
+	var chores = [
+		{"title":"Mow the lawn", "body": "Spread fertilizer afterward.", "state":1, "status":"Completed Oct 7, 2017, 8:33 AM" },
+		{"title":"Wash laundry", "body": "Don't forget to handwash cashmere.", "state":0, "status":"Incomplete" },
+		{"title":"Wash dishes", "state":2, "status":"Overdue" },
+		{"title":"Call the plumber",  "body": "A-1 Plumbing, 888-555-1234, bathroom sink clogged." },
+		{"title":"Sweep the floors", "body": "Kitchen, dining, and bathrooms.", "state":1 },
+		{"title":"Vacuum rugs", "state":0, "status":"Incomplete" },
+		{"title":"Dust furniture", "state":2 }
+	];
+
+	var choreList = new TaskList('task-list-1'); //instantiate tasklist
+	choreList.bind(chores); // bind data to list
+	
+	// bind groceries JSON to new tasklist instance
+	var groceries = [
+		{"title":"Eggs", "body": "1 dozen large eggs.", "state":0 },
+		{"title":"Yogurt", "body": "Strawberry, vanilla, and blueberry. I thought about getting greek yogurt as well, but sometimes the consistency is a little gritty and feels a bit dense. I prefer a more fluid yogurt.", "state":0 },
+		{"title":"Apples", "body": "Fuji or Honeycrisp.", "state":1, "status":"Completed Oct 7, 2017, 8:33 AM" },
+		{"title":"Milk", "body": "Whole milk and almond milk.", "state":0 }
+	];
+
+	var groceryList = new TaskList('task-list-2'); //instantiate tasklist
+	groceryList.bind(groceries); // bind data to list
+	
+	// bind groceries JSON to new tasklist instance, then alphabetize using the extended functionality
+	var groceryListSorted = new TaskList('task-list-3'); //instantiate tasklist
+	groceryListSorted.bind(groceries); // bind data to list
+	groceryListSorted.alphabetize(); // alphabetize
+</script>
+
