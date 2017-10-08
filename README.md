@@ -24,26 +24,28 @@ Author: [Matthew Collins]
 ## Code Example
 
 ```html
+<!DOCTYPE html>
 <html>
 	<head>
+		<meta charset="UTF-8">
 		<title>TaskList Library Example</title>
 		<script type="text/javascript" src="js/tasklist.js"></script>
 		<link rel="stylesheet" href="css/tasklist.css">
 	</head>
 	<body>
 		<div id="grocery-list"></div>
+
+		<script type="text/javascript">
+			// bind groceries JSON to new tasklist instance
+			var groceries = [
+				{"title":"Eggs", "body": "1 dozen large eggs.", "state":0 },
+				{"title":"Apples", "body": "Fuji or Honeycrisp.", "state":1, "status":"Completed Oct 7, 2017, 8:33 AM" },
+				{"title":"Milk", "body": "Whole milk and almond milk.", "state":0 }
+			];
+
+			var groceryList = new TaskList('grocery-list'); //instantiate tasklist by specifying the target div id
+			groceryList.bind(groceries); // bind data to list
+		</script>
 	</body>
 </html>
-
-<script type="text/javascript">
-	// bind groceries JSON to new tasklist instance
-	var groceries = [
-		{"title":"Eggs", "body": "1 dozen large eggs.", "state":0 },
-		{"title":"Apples", "body": "Fuji or Honeycrisp.", "state":1, "status":"Completed Oct 7, 2017, 8:33 AM" },
-		{"title":"Milk", "body": "Whole milk and almond milk.", "state":0 }
-	];
-
-	var groceryList = new TaskList('grocery-list'); //instantiate tasklist by specifying the target div id
-	groceryList.bind(groceries); // bind data to list
-</script>
 ```

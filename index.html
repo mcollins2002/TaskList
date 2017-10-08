@@ -1,5 +1,8 @@
+<!DOCTYPE html>
+
 <html>
 	<head>
+		<meta charset="UTF-8">
 		<title>TaskList Javascript Library Demo</title>
 		<script type="text/javascript" src="js/tasklist.js"></script>
 		<link rel="stylesheet" href="css/tasklist.css">
@@ -51,6 +54,7 @@
 			
 			<div class="list-container" id="shopping">
 				<h3>Shopping List <i>(alphabetized)</i></h3>
+				<p style="display: block;">The alphabetize functionality represents the ability to extend the TaskList class.</p>
 				<div id="task-list-3"></div>
 			</div>
 			
@@ -62,163 +66,178 @@
 				</div>
 			</div>
 		</div>
-	</body>
-</html>
 
-<!-- This script block is initializing the various tasklists -->
-<script type="text/javascript">
-	// extend the class with prototypes, specifically to provide a sorting method
-	TaskList.prototype.swap = String.prototype.swap ||
-	function (i,j) {
-		"use strict";
-		var temp = this.taskData[i];
-		this.taskData[i] = this.taskData[j];
-		this.taskData[j] = temp;
-	};
-	
-	TaskList.prototype.compare = String.prototype.compare ||
-	function (i,j) {
-		"use strict";
-		var len = this.taskData.length;
-		if (i < len && j < len)
-		{
-			var task1 = this.taskData[i].title;
-			var task2 = this.taskData[j].title;
-			
-			if(task1 < task2) return -1;
-			if(task1 > task2) return 1;
-		} 
-		return 0;
-	};
-	
-	TaskList.prototype.alphabetize = String.prototype.alphabetize ||
-	function () {
-		"use strict";
-		var swapped;
-		do {
-			swapped = false;
-			for(var i = 0; i < this.taskData.length; i++) {
-				if(this.taskData[i] && this.taskData[i + 1] && this.compare(i, i+1) == 1) {
-					this.swap(i, i + 1);
-					swapped = true;
+
+	<!-- This script block is initializing the various tasklists -->
+	<script type="text/javascript">
+		// extend the class with prototypes, specifically to provide a sorting method
+		TaskList.prototype.swap = String.prototype.swap ||
+		function (i,j) {
+			"use strict";
+			var temp = this.taskData[i];
+			this.taskData[i] = this.taskData[j];
+			this.taskData[j] = temp;
+		};
+		
+		TaskList.prototype.compare = String.prototype.compare ||
+		function (i,j) {
+			"use strict";
+			var len = this.taskData.length;
+			if (i < len && j < len)
+			{
+				var task1 = this.taskData[i].title;
+				var task2 = this.taskData[j].title;
+				
+				if(task1 < task2) return -1;
+				if(task1 > task2) return 1;
+			} 
+			return 0;
+		};
+		
+		TaskList.prototype.alphabetize = String.prototype.alphabetize ||
+		function () {
+			"use strict";
+			var swapped;
+			do {
+				swapped = false;
+				for(var i = 0; i < this.taskData.length; i++) {
+					if(this.taskData[i] && this.taskData[i + 1] && this.compare(i, i+1) == 1) {
+						this.swap(i, i + 1);
+						swapped = true;
+					}
 				}
+			} while(swapped);
+			this.bind(this.taskData);
+		};
+
+		// bind chores JSON to new tasklist instance
+		var chores = [
+			{"title":"Mow the lawn", "body": "Spread fertilizer afterward.", "state":1, "status":"Completed Oct 7, 2017, 8:33 AM" },
+			{"title":"Wash laundry", "body": "Don't forget to handwash cashmere.", "state":0, "status":"Incomplete" },
+			{"title":"Wash dishes", "state":2, "status":"Overdue" },
+			{"title":"Call the plumber",  "body": "A-1 Plumbing, 888-555-1234, bathroom sink clogged." },
+			{"title":"Sweep the floors", "body": "Kitchen, dining, and bathrooms.", "state":1 },
+			{"title":"Vacuum rugs", "state":0, "status":"Incomplete" },
+			{"title":"Dust furniture", "state":2 }
+		];
+
+		var choreList = new TaskList('task-list-1'); //instantiate tasklist
+		choreList.bind(chores); // bind data to list
+		
+		// bind groceries JSON to new tasklist instance
+		var groceries = [
+			{"title":"Eggs", "body": "1 dozen large eggs.", "state":0 },
+			{"title":"Yogurt", "body": "Strawberry, vanilla, and blueberry. I thought about getting greek yogurt as well, but sometimes the consistency is a little gritty and feels a bit dense. I prefer a more fluid yogurt.", "state":0 },
+			{"title":"Apples", "body": "Fuji or Honeycrisp.", "state":1, "status":"Completed Oct 7, 2017, 8:33 AM" },
+			{"title":"Milk", "body": "Whole milk and almond milk.", "state":0 }
+		];
+
+		var groceryList = new TaskList('task-list-2'); //instantiate tasklist
+		groceryList.bind(groceries); // bind data to list
+		
+		// bind groceries JSON to new tasklist instance, then alphabetize using the extended functionality
+		var groceryListSorted = new TaskList('task-list-3'); //instantiate tasklist
+		groceryListSorted.bind(groceries); // bind data to list
+		groceryListSorted.alphabetize(); // alphabetize
+		
+		// bind test JSON to new tasklist instance
+		var testData = [
+			{"title":"A", "body": "A description.", "state":0 },
+			{"title":"B", "body": "B description.", "state":0 },
+			{"title":"C", "body": "C description.", "state":0 },
+			{"title":"D", "body": "D description.", "state":0 }
+		];
+		
+		var testList= new TaskList('test-list'); //instantiate tasklist
+		testList.bind(testData); // bind data to list
+	</script>
+
+
+	<!-- This script block is specific to the unit tests -->
+	<script type="text/javascript">
+		// task states
+		var incompleteState = 0;
+		var completedState = 1;
+		var overdueState = 2;
+		var invalidState = 'INVALID STATE';
+			
+		// run some unit tests, outputting results to the browser console.
+		function testStateChange(currentState, expectedState) {
+			"use strict"
+			results.total++;
+			if (currentState !== expectedState) {
+				results.failed++;
+				if (expectedState === invalidState)
+					console.log("FAILURE >> This was an intentional failure! Expected {0}, but was {1}".replaceTokens(expectedState, currentState));
+				else
+					console.log("FAILURE >> Expected {0}, but was {1}".replaceTokens(expectedState, currentState));
 			}
-		} while(swapped);
-		this.bind(this.taskData);
-	};
-
-	// bind chores JSON to new tasklist instance
-	var chores = [
-		{"title":"Mow the lawn", "body": "Spread fertilizer afterward.", "state":1, "status":"Completed Oct 7, 2017, 8:33 AM" },
-		{"title":"Wash laundry", "body": "Don't forget to handwash cashmere.", "state":0, "status":"Incomplete" },
-		{"title":"Wash dishes", "state":2, "status":"Overdue" },
-		{"title":"Call the plumber",  "body": "A-1 Plumbing, 888-555-1234, bathroom sink clogged." },
-		{"title":"Sweep the floors", "body": "Kitchen, dining, and bathrooms.", "state":1 },
-		{"title":"Vacuum rugs", "state":0, "status":"Incomplete" },
-		{"title":"Dust furniture", "state":2 }
-	];
-
-	var choreList = new TaskList('task-list-1'); //instantiate tasklist
-	choreList.bind(chores); // bind data to list
-	
-	// bind groceries JSON to new tasklist instance
-	var groceries = [
-		{"title":"Eggs", "body": "1 dozen large eggs.", "state":0 },
-		{"title":"Yogurt", "body": "Strawberry, vanilla, and blueberry. I thought about getting greek yogurt as well, but sometimes the consistency is a little gritty and feels a bit dense. I prefer a more fluid yogurt.", "state":0 },
-		{"title":"Apples", "body": "Fuji or Honeycrisp.", "state":1, "status":"Completed Oct 7, 2017, 8:33 AM" },
-		{"title":"Milk", "body": "Whole milk and almond milk.", "state":0 }
-	];
-
-	var groceryList = new TaskList('task-list-2'); //instantiate tasklist
-	groceryList.bind(groceries); // bind data to list
-	
-	// bind groceries JSON to new tasklist instance, then alphabetize using the extended functionality
-	var groceryListSorted = new TaskList('task-list-3'); //instantiate tasklist
-	groceryListSorted.bind(groceries); // bind data to list
-	groceryListSorted.alphabetize(); // alphabetize
-	
-	// bind test JSON to new tasklist instance
-	var testData = [
-		{"title":"A", "body": "A description.", "state":0 },
-		{"title":"B", "body": "B description.", "state":0 },
-		{"title":"C", "body": "C description.", "state":0 },
-		{"title":"D", "body": "D description.", "state":0 }
-	];
-	
-	var testList= new TaskList('test-list'); //instantiate tasklist
-	testList.bind(testData); // bind data to list
-</script>
-
-
-<!-- This script block is specific to the unit tests -->
-<script type="text/javascript">
-	// task states
-	var incompleteState = 0;
-	var completedState = 1;
-	var overdueState = 2;
-	var invalidState = 'INVALID STATE';
-		
-	// run some unit tests, outputting results to the browser console.
-	function testStateChange(currentState, expectedState) {
-		"use strict"
-		results.total++;
-		if (currentState !== expectedState) {
-			results.failed++;
-			if (expectedState === invalidState)
-				console.log("FAILURE >> This was an intentional failure! Expected {0}, but was {1}".replaceTokens(expectedState, currentState));
-			else
-				console.log("FAILURE >> Expected {0}, but was {1}".replaceTokens(expectedState, currentState));
 		}
-	}
-  
-	var results = {
-		total: 0,
-		failed: 0,
-		
-		passed: function() {
-			"use strict"
-			var self = this;
-			return (self.total - self.failed);
-		},
-		
-		reset: function() {
-			"use strict"
-			var self = this;
-			self.total = self.failed = 0;
+	  
+		var results = {
+			total: 0,
+			failed: 0,
+			
+			passed: function() {
+				"use strict"
+				var self = this;
+				return (self.total - self.failed);
+			},
+			
+			reset: function() {
+				"use strict"
+				var self = this;
+				self.total = self.failed = 0;
+			}
+		};
+	  
+		function runTests(id) {
+			// reset results
+			results.reset();
+			
+			// advise the user where results will display & init console
+			alert("Your browser console will display the test summary.");
+			console.clear();
+			console.log("OVERVIEW >> Executing unit tests specific to state change...");
+			
+			var index = 1;
+			
+			// define taskList as a function to ensure that we aren't referencing a stale copy of the data
+			var taskList = function () {
+				return TaskListManager.getList(id);
+			};
+			
+			if (taskList() == null) {
+				console.log("ERROR >> TaskList does not exist. Unit test terminated.");
+				return;
+			} else if (taskList().taskData.length <= index) {
+				console.log("ERROR >> Index out of range. Unit test terminated.");
+				return;
+			}
+			
+			// define task as a function to ensure that we aren't referencing a stale copy of the data
+			var task = function () {
+				return taskList().taskData[index];
+			};
+			
+			// test default state
+			testStateChange(task().state, incompleteState);
+			
+			// intentional failure completed state
+			testStateChange(task().state, invalidState);
+			
+			// test completed state
+			TaskListManager.getList(id).complete(index);
+			testStateChange(task().state, completedState);
+			
+			// test overdue state
+			TaskListManager.getList(id).escalate(index);
+			testStateChange(task().state, overdueState);
+			
+			// output test results to console
+			console.log("SUMMARY >> Of {0} tests, {1} failed, {2} passed.".replaceTokens(results.total, results.failed, results.passed()));
 		}
-	};
-  
-	function runTests(id) {
-		// reset results
-		results.reset();
-		
-		// advise the user where results will display
-		alert("Your browser console will display the test summary.");
-		console.log("OVERVIEW >> Executing unit tests specific to state change...");
-		
-		var currentState;
-		var index = 1;
-		
-		// test default state
-		currentState = TaskListManager.getList(id).taskData[index].state;
-		testStateChange(currentState, incompleteState);
-		
-		// intentional failure completed state
-		currentState = TaskListManager.getList(id).taskData[index].state;
-		testStateChange(currentState, invalidState);
-		
-		// test completed state
-		TaskListManager.getList(id).complete(index);
-		currentState = TaskListManager.getList(id).taskData[index].state;
-		testStateChange(currentState, completedState);
-		
-		// test overdue state
-		TaskListManager.getList(id).escalate(index);
-		currentState = TaskListManager.getList(id).taskData[index].state;
-		testStateChange(currentState, overdueState);
-		
-		// output test results to console
-		console.log("SUMMARY >> Of {0} tests, {1} failed, {2} passed.".replaceTokens(results.total, results.failed, results.passed()));
-	}
-</script>
+	</script>
+		</body>
+</html>
 
