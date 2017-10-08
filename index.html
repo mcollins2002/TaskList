@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>Javascript Library</title>
+		<title>TaskList Javascript Library Demo</title>
 		<script type="text/javascript" src="js/tasklist.js"></script>
 		<link rel="stylesheet" href="css/tasklist.css">
 		
@@ -33,6 +33,7 @@
 				background-color: lightblue; 
 				margin-right: 10px;
 				margin-bottom: 10px;
+				vertical-align: top;
 			}
 		</style>
 	</head>
@@ -42,20 +43,29 @@
 			<div id="task-list-1"></div>
 		</div>
 
-		<div style="display: block; overflow: hidden;">
-		<div class="list-container" id="shopping">
-			<h3>Shopping List</h3>
-			<div id="task-list-2"></div>
-		</div>
-		
-		<div class="list-container" id="shopping">
-			<h3>Shopping List <i>(alphabetized)</i></h3>
-			<div id="task-list-3"></div>
-		</div>
+		<div style="display: block; overflow: hidden; vertical-align: top;">
+			<div class="list-container" id="shopping">
+				<h3>Shopping List</h3>
+				<div id="task-list-2"></div>
+			</div>
+			
+			<div class="list-container" id="shopping">
+				<h3>Shopping List <i>(alphabetized)</i></h3>
+				<div id="task-list-3"></div>
+			</div>
+			
+			<div class="list-container" id="shopping">
+				<h3>Unit Test List</h3>
+				<div id="test-list"></div>
+				<div style="display: block; padding: 5px; text-align: center; opacity: 0.5; background-color: white;">
+					<a href="javascript: runTests('test-list');" style="color: #000;">Run Unit Tests</a>
+				</div>
+			</div>
 		</div>
 	</body>
 </html>
 
+<!-- This script block is initializing the various tasklists -->
 <script type="text/javascript">
 	// extend the class with prototypes, specifically to provide a sorting method
 	TaskList.prototype.swap = String.prototype.swap ||
@@ -126,5 +136,89 @@
 	var groceryListSorted = new TaskList('task-list-3'); //instantiate tasklist
 	groceryListSorted.bind(groceries); // bind data to list
 	groceryListSorted.alphabetize(); // alphabetize
+	
+	// bind test JSON to new tasklist instance
+	var testData = [
+		{"title":"A", "body": "A description.", "state":0 },
+		{"title":"B", "body": "B description.", "state":0 },
+		{"title":"C", "body": "C description.", "state":0 },
+		{"title":"D", "body": "D description.", "state":0 }
+	];
+	
+	var testList= new TaskList('test-list'); //instantiate tasklist
+	testList.bind(testData); // bind data to list
+</script>
+
+
+<!-- This script block is specific to the unit tests -->
+<script type="text/javascript">
+	// task states
+	var incompleteState = 0;
+	var completedState = 1;
+	var overdueState = 2;
+	var invalidState = 'INVALID STATE';
+		
+	// run some unit tests, outputting results to the browser console.
+	function testStateChange(currentState, expectedState) {
+		"use strict"
+		results.total++;
+		if (currentState !== expectedState) {
+			results.failed++;
+			if (expectedState === invalidState)
+				console.log("FAILURE >> This was an intentional failure! Expected {0}, but was {1}".replaceTokens(expectedState, currentState));
+			else
+				console.log("FAILURE >> Expected {0}, but was {1}".replaceTokens(expectedState, currentState));
+		}
+	}
+  
+	var results = {
+		total: 0,
+		failed: 0,
+		
+		passed: function() {
+			"use strict"
+			var self = this;
+			return (self.total - self.failed);
+		},
+		
+		reset: function() {
+			"use strict"
+			var self = this;
+			self.total = self.failed = 0;
+		}
+	};
+  
+	function runTests(id) {
+		// reset results
+		results.reset();
+		
+		// advise the user where results will display
+		alert("Your browser console will display the test summary.");
+		console.log("OVERVIEW >> Executing unit tests specific to state change...");
+		
+		var currentState;
+		var index = 1;
+		
+		// test default state
+		currentState = TaskListManager.getList(id).taskData[index].state;
+		testStateChange(currentState, incompleteState);
+		
+		// intentional failure completed state
+		currentState = TaskListManager.getList(id).taskData[index].state;
+		testStateChange(currentState, invalidState);
+		
+		// test completed state
+		TaskListManager.getList(id).complete(index);
+		currentState = TaskListManager.getList(id).taskData[index].state;
+		testStateChange(currentState, completedState);
+		
+		// test overdue state
+		TaskListManager.getList(id).escalate(index);
+		currentState = TaskListManager.getList(id).taskData[index].state;
+		testStateChange(currentState, overdueState);
+		
+		// output test results to console
+		console.log("SUMMARY >> Of {0} tests, {1} failed, {2} passed.".replaceTokens(results.total, results.failed, results.passed()));
+	}
 </script>
 

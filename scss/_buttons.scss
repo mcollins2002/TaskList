@@ -1,0 +1,71 @@
+// buttons
+
+$rotation: 45deg;
+
+.mark {
+	cursor: pointer;
+	display: inline-block;
+	height: 22px;
+	width: 22px;
+	-ms-transform: rotate($rotation); /* IE 9 */
+	-webkit-transform: rotate($rotation); /* Chrome, Safari, Opera */
+	transform: rotate($rotation);
+}
+
+.checkmark {
+	@extend .mark;	
+}
+
+	.checkmark > div {
+		background-color: lightgreen;
+		filter: brightness(80%);
+		position: absolute;
+	}
+
+	.checkmark:hover > div {
+		filter: brightness(50%);
+	}
+
+	
+	.checkmark > div.stem {
+		height: 13px;
+		left: 11px;
+		top: 6px;
+		width: 3px;
+	}
+
+	.checkmark > div.kick {
+		border-right-style: none;
+		height:3px;
+		left:7px;
+		position: absolute;
+		top:16px;
+		width:5px;
+	}
+
+.deletemark {
+	@extend .mark;	
+}
+
+	.deletemark > div {
+		background-color:indianred;
+		position: absolute;
+	}
+	
+	.deletemark:hover > div {
+		filter: brightness(50%);
+	}
+
+		.deletemark > div.stem {
+			height: 13px;
+			left: 11px;
+			top: 5px;
+			width: 3px;
+		}
+
+		.deletemark > div.kick {
+			height: 3px;
+			left: 6px;
+			top: 10px;
+			width: 13px;
+		}

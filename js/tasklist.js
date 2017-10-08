@@ -128,6 +128,7 @@ TaskList.prototype = {
 	
 	// change task state per args
 	changeState: function (i, state) {
+		"use strict"
 		if (state == 1) {
 			var date = new Date();
 			var options = {
@@ -136,10 +137,13 @@ TaskList.prototype = {
 			};
 
 			var dateTime = date.toLocaleTimeString("en-us", options);
-			this.taskData[i]["status"] = "Completed " + dateTime;
+			this.taskData[i].status = "Completed " + dateTime;
+		}
+		else {
+			delete this.taskData[i].status;
 		}
 
-		this.taskData[i]["state"] = state;
+		this.taskData[i].state = state;
 		this.bind(this.taskData);
 	},
 
