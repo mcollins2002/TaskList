@@ -21,7 +21,7 @@ Author: [Matthew Collins]
 4. Initialize a new TaskList by specifying the ```<div>``` id.
 5. Bind your JSON data to the TaskList:
 
-```scala
+```javascript
   var jsonData = [{ "title": string, "body": string, "state": int, "status": string }];
   var taskList = new TaskList('tasklist-div'); //instantiate tasklist by specifying the target div id
   taskList.bind(jsonData); // bind data to list
