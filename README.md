@@ -19,7 +19,15 @@ Author: [Matthew Collins]
 
 3. Define a ```<div>``` to serve as the TaskList container.
 4. Initialize a new TaskList by specifying the ```<div>``` id.
-5. Bind your JSON data to the TaskList.
+5. Bind your JSON data to the TaskList:
+
+```scala
+[{"title": string,
+"body": string,
+"state": int,
+"status": string 
+}]
+```
 
 ## Code Example
 
